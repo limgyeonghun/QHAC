@@ -163,8 +163,7 @@ void MainWidget::procInitTreeWidget()
 
     //Show table
     QStringList strItemList;
-    strItemList //<< "MODE"
-                //<< "ISARMED"
+    strItemList //<< "ISARMED"
                 //<< "Battery"
                 //<< "LPOS_STR"
                 //<< "LPOS_STR"
@@ -172,7 +171,8 @@ void MainWidget::procInitTreeWidget()
                 //<< "TIMESTAMP"
                 << "POS_"
                 << "RTK"
-                << "FIXED_CHECK";
+                << "FIXED_CHECK"
+                << "MODE";
     
     int numItem = strItemList.size();
 
@@ -327,7 +327,6 @@ void MainWidget::loadConfigFile()
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.exec();
     }else{
-        // QString fileName = "/home/suv/Project/qhac4/docs/CMODEL_2EA.conf";
         QString fileName = QFileDialog::getOpenFileName(
                 this,
                 tr("Open Agent Configuration File"),
@@ -549,11 +548,12 @@ void MainWidget::keyEvent(QKeyEvent *event)
         for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
             IVehicle* agent = agentsIterator.value();
             agent->cmd("ARM", refPos.altitude());
-            qDebug() << "ARM>>>>>>>>";
+            qDebug() << "ARM";
         }
 
 	}
         break;
+
     case Qt::Key_W:
 	{
         const QMap<int, IVehicle*> agentsMap = mManager->agents();
@@ -561,129 +561,11 @@ void MainWidget::keyEvent(QKeyEvent *event)
         for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
             IVehicle* agent = agentsIterator.value();
             agent->cmd("DISARM");
+            qDebug() << "DISARM";
         }
 	}
-        break;
-    case Qt::Key_A:
-    {
-        qDebug() << "TAKEOFF......";
-        mManager->agent(3)->cmd("TAKEOFF", 5 , HEADING);
-        mManager->agent(4)->cmd("TAKEOFF", 5 , HEADING);
-        /*
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            qDebug() << "TAKEOFF......";
-            agent->cmd("TAKEOFF", 3, HEADING);
-        }
-        */
-    }
-        break;
-    case Qt::Key_S:
-    {
-        qDebug() << "LANDING......";
-        mManager->agent(3)->cmd("LANDING", HEADING);
-        mManager->agent(4)->cmd("LANDING", HEADING);
-        /*
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            qDebug() << "LANDING......";
-			agent->cmd("LANDING", HEADING);
-        }
-        */
-    }
-        break; 
-    case Qt::Key_O:
-    {
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            //agent->cmd("ARM", refPos.altitude());
-            agent->cmd("OFFBOARD");
-            qDebug() << "OFFBOARD......";
-        }
-    }
         break;
 
-    case Qt::Key_1:
-	{
-        mManager->agent(1)->cmd("MOVE_NED", QVector3D(10, 0, 0), HEADING);
-        //mManager->agent(2)->cmd("MOVE_NED", QVector3D(10, 0, 0), HEADING);
-        //mManager->agent(3)->cmd("MOVE_NED", QVector3D(0, 0, -5), HEADING);
-        //mManager->agent(4)->cmd("MOVE_NED", QVector3D(0, 0, -5), HEADING);
-
-        /*
-        QVector3D target_pos = QVector3D(0, 0, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-        */
-	}
-        break;
-    /*
-    case Qt::Key_2:
-	{
-        QVector3D target_pos = QVector3D(20, 20, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-	}
-        break;
-    case Qt::Key_3:
-	{
-        QVector3D target_pos = QVector3D(-20, 20, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-	}
-        break;
-    case Qt::Key_4:
-	{
-        QVector3D target_pos = QVector3D(-20, -20, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-	}
-        break;
-    case Qt::Key_5:
-	{
-        QVector3D target_pos = QVector3D(0, -20, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-	}
-        break;
-    case Qt::Key_6:
-	{
-        QVector3D target_pos = QVector3D(0, 0, 0);
-        const QMap<int, IVehicle*> agentsMap = mManager->agents();
-        QMap<int, IVehicle*>::const_iterator agentsIterator;
-        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
-            IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
-        }
-	}
-        break;
-    */
     case Qt::Key_N:
 	{
         const QMap<int, IVehicle*> agentsMap = mManager->agents();
@@ -695,13 +577,75 @@ void MainWidget::keyEvent(QKeyEvent *event)
         }
 	}
         break;
-    case Qt::Key_F:
-	{
-       HEADING = mManager->agent(3)->data("HEADING").value<qreal>();
-       qDebug() << "HAEDING FIX...";
-       qDebug() << HEADING;
-	}
+
+    case Qt::Key_O:
+    {
+        const QMap<int, IVehicle*> agentsMap = mManager->agents();
+        QMap<int, IVehicle*>::const_iterator agentsIterator;
+        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
+            IVehicle* agent = agentsIterator.value();
+            agent->cmd("OFFBOARD");
+            qDebug() << "OFFBOARD";
+        }
+    }
         break;
+
+    case Qt::Key_M:
+    {
+        const QMap<int, IVehicle*> agentsMap = mManager->agents();
+        QMap<int, IVehicle*>::const_iterator agentsIterator;
+        for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
+            IVehicle* agent = agentsIterator.value();
+            agent->cmd("MANUAL");
+            qDebug() << "MANUAL";
+        }
+    }
+        break;
+
+    // case Qt::Key_A:
+    // {
+    //     const QMap<int, IVehicle*> agentsMap = mManager->agents();
+    //     QMap<int, IVehicle*>::const_iterator agentsIterator;
+    //     for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
+    //         IVehicle* agent = agentsIterator.value();
+    //         qDebug() << "TAKEOFF......";
+    //         agent->cmd("TAKEOFF", 3, HEADING);
+    //     }
+    // }
+    //     break;
+
+    // case Qt::Key_S:
+    // {
+    //     const QMap<int, IVehicle*> agentsMap = mManager->agents();
+    //     QMap<int, IVehicle*>::const_iterator agentsIterator;
+    //     for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
+    //         IVehicle* agent = agentsIterator.value();
+    //         qDebug() << "LANDING......";
+	// 		agent->cmd("LANDING", HEADING);
+    //     }
+    // }
+    //    break; 
+
+    // case Qt::Key_1:
+	// {
+    //     QVector3D target_pos = QVector3D(0, 0, 0);
+    //     const QMap<int, IVehicle*> agentsMap = mManager->agents();
+    //     QMap<int, IVehicle*>::const_iterator agentsIterator;
+    //     for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
+    //         IVehicle* agent = agentsIterator.value();
+    //         agent->cmd("MOVE_NED", target_pos, HEADING);
+    //     }
+	// }
+    //     break;
+
+    // case Qt::Key_F:
+	// {
+    //    HEADING = mManager->agent(3)->data("HEADING").value<qreal>();
+    //    qDebug() << "HAEDING FIX...";
+    //    qDebug() << HEADING;
+	// }
+    //     break;
+    
     default:
         break;
     }; 
@@ -724,9 +668,7 @@ void MainWidget::updateDeparture()
                 << "RTK"
                 << "FIXED_CHECK"
                 << "MODE"
-                << "Battery"
-                << "RTK"
-                << "FIXED_CHECK";
+                << "Battery";
     int numItem = strItemList.size();
 
     const QMap<int, IVehicle*> agentsMap = mManager->agents();

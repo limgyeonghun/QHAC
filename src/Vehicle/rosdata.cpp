@@ -61,8 +61,8 @@ void CROSData::initSubscription()
     // Subscribers
     QString topic = nullptr;
     int sysid = mAgent->data("SYSID").toInt();
-    //topic = QString("/vehicle%1/out/VehicleStatus").arg(sysid); 
-    //mVehicleStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleStatus, this, _1));
+    topic = QString("/vehicle%1/out/VehicleStatus").arg(sysid); 
+    mVehicleStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleStatus, this, _1));
     // topic = QString("/vehicle%1/out/VehicleLocalPosition").arg(sysid); 
     // mVehicleLocalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleLocalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleLocalPosition, this, _1));
     // topic = QString("/vehicle%1/out/VehicleGlobalPosition").arg(sysid); 
@@ -179,6 +179,9 @@ QVariant CROSData::data(const QString &aItem)
         case 5:
             mode = "Auto return to launch mode";
             break;
+        case 14:
+            mode = "Offboard";
+            break;
         case 17:
             mode = "Takeoff";
             break;
@@ -199,7 +202,7 @@ QVariant CROSData::data(const QString &aItem)
         return mGstRunning;
     }
     else if ( item == "BATTERY") {
-        return QString("%1 %").arg(mBatteryStatus.remaining*100, 6, 'f', 2);
+        return QString("%1 %").arg(mMonitoring.battery, 6, 'f', 2);
     }
     else if ( item == "DISTANCE") {
         return 0;
