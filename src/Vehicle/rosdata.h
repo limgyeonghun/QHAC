@@ -26,6 +26,7 @@
 #include <px4_msgs/msg/uavcan_parameter_value.hpp>
 #include <px4_msgs/msg/log_message.hpp>
 #include <px4_msgs/msg/battery_status.hpp>
+#include <px4_msgs/msg/monitoring.hpp>
 
 #include <px4_msgs/msg/log_message.hpp>
 #include <sensor_msgs/msg/image.hpp>
@@ -165,6 +166,7 @@ public:
     void updateBatteryStatus(const px4_msgs::msg::BatteryStatus::SharedPtr msg);
     void updateFpvCamera(const sensor_msgs::msg::Image::SharedPtr msg);
     void updateFollowCamera(const sensor_msgs::msg::Image::SharedPtr msg);
+    void updateMonitoring(const px4_msgs::msg::Monitoring::SharedPtr msg);
 
     // void parameterValueCallback(const px4_msgs::msg::UavcanParameterValue::SharedPtr msg);
     QList<QString> getParamRequested();
@@ -218,6 +220,7 @@ private:
     px4_msgs::msg::NavigatorMissionItem         mMissionItem;
     px4_msgs::msg::VehicleCommandAck            mVehicleCommandAck;
     px4_msgs::msg::BatteryStatus                mBatteryStatus;
+    px4_msgs::msg::Monitoring                   mMonitoring;
     sensor_msgs::msg::Image                     mCameraImage;
     bool                                        mGstRunning;
 
@@ -238,6 +241,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr mFollowCameraImageSub_;
     rclcpp::Subscription<px4_msgs::msg::VehicleCommandAck>::SharedPtr mVehicleCommandAckSub_;
     rclcpp::Subscription<px4_msgs::msg::LogMessage>::SharedPtr mLogMessageSub_;
+    rclcpp::Subscription<px4_msgs::msg::Monitoring>::SharedPtr mMonitoringSub_;
     // rclcpp::Subscription<px4_msgs::msg::UavcanParameterValue>::SharedPtr mUavcanParameterValueSub_;
 
     rclcpp::Publisher<px4_msgs::msg::VehicleCommand>::SharedPtr mCommandQHACPub_;

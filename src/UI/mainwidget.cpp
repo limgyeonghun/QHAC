@@ -163,13 +163,16 @@ void MainWidget::procInitTreeWidget()
 
     //Show table
     QStringList strItemList;
-    strItemList << "MODE"
-                << "ISARMED"
-                << "Battery"
-                << "LLH_STR"
-                << "LPOS_STR"
-                << "PREFLIGHT_CHECK"
-                << "TIMESTAMP";
+    strItemList //<< "MODE"
+                //<< "ISARMED"
+                //<< "Battery"
+                //<< "LPOS_STR"
+                //<< "LPOS_STR"
+                //<< "PREFLIGHT_CHECK"
+                //<< "TIMESTAMP"
+                << "POS_"
+                << "RTK"
+                << "FIXED_CHECK";
     
     int numItem = strItemList.size();
 
@@ -593,28 +596,23 @@ void MainWidget::keyEvent(QKeyEvent *event)
         */
     }
         break; 
-    case Qt::Key_0:
-	{
-        mManager->agent(1)->cmd("MOVE_NED", QVector3D(80, 0, 0), HEADING);
-        //mManager->agent(2)->cmd("MOVE_NED", QVector3D(40, 0, 0), HEADING);
-        //mManager->agent(3)->cmd("MOVE_NED", QVector3D(20, 0, -5), HEADING);
-        //mManager->agent(4)->cmd("MOVE_NED", QVector3D(20, 0, -5), HEADING);
-
-        /*
-        QVector3D target_pos = QVector3D(20, 0, 0);
+    case Qt::Key_O:
+    {
         const QMap<int, IVehicle*> agentsMap = mManager->agents();
         QMap<int, IVehicle*>::const_iterator agentsIterator;
         for (agentsIterator = agentsMap.begin(); agentsIterator != agentsMap.end(); ++agentsIterator){
             IVehicle* agent = agentsIterator.value();
-            agent->cmd("MOVE_NED", target_pos, HEADING);
+            //agent->cmd("ARM", refPos.altitude());
+            agent->cmd("OFFBOARD");
+            qDebug() << "OFFBOARD......";
         }
-        */
-	}
+    }
         break;
+
     case Qt::Key_1:
 	{
-        mManager->agent(1)->cmd("MOVE_NED", QVector3D(0, 0, 0), HEADING);
-        //mManager->agent(2)->cmd("MOVE_NED", QVector3D(0, 0, 0), HEADING);
+        mManager->agent(1)->cmd("MOVE_NED", QVector3D(10, 0, 0), HEADING);
+        //mManager->agent(2)->cmd("MOVE_NED", QVector3D(10, 0, 0), HEADING);
         //mManager->agent(3)->cmd("MOVE_NED", QVector3D(0, 0, -5), HEADING);
         //mManager->agent(4)->cmd("MOVE_NED", QVector3D(0, 0, -5), HEADING);
 
@@ -722,9 +720,13 @@ void MainWidget::on_sysList_itemClicked(QListWidgetItem *item)
 void MainWidget::updateDeparture()
 {
     QStringList strItemList;
-    strItemList << "MODE"
+    strItemList << "POS_"
+                << "RTK"
+                << "FIXED_CHECK"
+                << "MODE"
                 << "Battery"
-                << "LLH_STR";
+                << "RTK"
+                << "FIXED_CHECK";
     int numItem = strItemList.size();
 
     const QMap<int, IVehicle*> agentsMap = mManager->agents();
@@ -751,6 +753,7 @@ void MainWidget::updateDeparture()
             departureData.append("\t");
         }
         ui->departureControl->updateData(departureData);
+        ui->departureControl->adjustColumnSizes(); // 새로운 메소드 호출
     }
 }
 void MainWidget::on_camera_type_toggled(bool checked)

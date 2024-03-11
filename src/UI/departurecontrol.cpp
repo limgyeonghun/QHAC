@@ -39,6 +39,14 @@ void DepartureControl::updateData(QString data)
     }
 }
 
+void DepartureControl::adjustColumnSizes()
+{
+    // 열의 좌우 크기를 콘텐츠에 맞게 조절
+    for (int i = 0; i < ui->tableWidget->columnCount(); ++i) {
+        ui->tableWidget->horizontalHeader()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
+}
+
 void DepartureControl::showWarning(const QMap<int, QString> warning)
 {
     warningsec++;

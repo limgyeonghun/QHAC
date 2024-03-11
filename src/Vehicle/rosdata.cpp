@@ -61,14 +61,16 @@ void CROSData::initSubscription()
     // Subscribers
     QString topic = nullptr;
     int sysid = mAgent->data("SYSID").toInt();
-    topic = QString("/vehicle%1/out/VehicleStatus").arg(sysid); 
-    mVehicleStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleStatus, this, _1));
-    topic = QString("/vehicle%1/out/VehicleLocalPosition").arg(sysid); 
-    mVehicleLocalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleLocalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleLocalPosition, this, _1));
-    topic = QString("/vehicle%1/out/VehicleGlobalPosition").arg(sysid); 
-    mVehicleGlobalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleGlobalPosition, this, _1));
-    topic = QString("/vehicle%1/out/BatteryStatus").arg(sysid); 
-    mBatteryStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::BatteryStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateBatteryStatus, this, _1));
+    //topic = QString("/vehicle%1/out/VehicleStatus").arg(sysid); 
+    //mVehicleStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleStatus, this, _1));
+    // topic = QString("/vehicle%1/out/VehicleLocalPosition").arg(sysid); 
+    // mVehicleLocalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleLocalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleLocalPosition, this, _1));
+    // topic = QString("/vehicle%1/out/VehicleGlobalPosition").arg(sysid); 
+    // mVehicleGlobalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleGlobalPosition, this, _1));
+    //topic = QString("/vehicle%1/out/BatteryStatus").arg(sysid); 
+    //mBatteryStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::BatteryStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateBatteryStatus, this, _1));
+    topic = QString("/vehicle%1/out/Monitoring").arg(sysid); 
+    mMonitoringSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::Monitoring>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateMonitoring, this, _1));
     /*
     topic = QString("/vehicle%1/out/Mission").arg(sysid); 
     mMissionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::Mission>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateMission, this, _1));
@@ -81,8 +83,8 @@ void CROSData::initSubscription()
     topic = QString("/vehicle%1/follow_camera/image_raw").arg(sysid - 1);
     mFollowCameraImageSub_ = mQHAC3Node->create_subscription<sensor_msgs::msg::Image>(topic.toStdString().c_str(), qos2, std::bind(&CROSData::updateFollowCamera, this, _1));
     */
-    mVehicleCommandAckSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleCommandAck>(topic_prefix + "/vehicle_command_ack", qos, std::bind(&CROSData::updateVehicleCommandAck, this, _1));
-    mLogMessageSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::LogMessage>(topic_prefix + "/log_message", qos, std::bind(&CROSData::updateLogMessage, this, _1));
+   // mVehicleCommandAckSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleCommandAck>(topic_prefix + "/vehicle_command_ack", qos, std::bind(&CROSData::updateVehicleCommandAck, this, _1));
+    //mLogMessageSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::LogMessage>(topic_prefix + "/log_message", qos, std::bind(&CROSData::updateLogMessage, this, _1));
     // mUavcanParameterValueSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::UavcanParameterValue>(topic_prefix + "/uavcan_parameter_value", qos, std::bind(&CROSData::parameterValueCallback, this, _1));
 
     // Publishers
@@ -358,6 +360,23 @@ QVariant CROSData::data(const QString &aItem)
         bool valid_position = mVehicleLocalPosition.xy_valid&mVehicleLocalPosition.z_valid&mVehicleLocalPosition.v_xy_valid&mVehicleLocalPosition.v_z_valid;
         return (valid_position ? "READY":"NOT READY");
     }
+    else if (item == "POS_"){
+        return QString("(%1, %2, %3)")
+				.arg(mMonitoring.pos_x,6,'f',6)
+				.arg(mMonitoring.pos_y,6,'f',6)
+				.arg(mMonitoring.pos_z,6,'f',6);   
+    }
+    else if (item == "RTK"){
+        return QString("(%1, %2, %3)")
+				.arg(mMonitoring.rtk_n,6,'f',6)
+				.arg(mMonitoring.rtk_e,6,'f',6)
+				.arg(mMonitoring.rtk_d,6,'f',6);   
+    }
+    else if (item == "FIXED_CHECK"){
+        const uint32_t RTKGPS_FIXED_MODE_MASK = 1 << 9; // 10번째 비트에 해당하는 비트 마스크
+        bool fixed_check = mMonitoring.status1 & RTKGPS_FIXED_MODE_MASK;
+        return (fixed_check ? "FIXED":"NOT FIXED");
+    }
     else if (item == "TIMESTAMP"){
 
         qulonglong timestamp = mVehicleStatus.timestamp;
@@ -485,29 +504,34 @@ void CROSData::updateMission(const px4_msgs::msg::Mission::SharedPtr msg)
 
 void CROSData::updateMissionItem(const px4_msgs::msg::NavigatorMissionItem::SharedPtr msg)
 {
-    mMissionItem = *msg;
+    // mMissionItem = *msg;
     
-    CROSData::MissionItem *item = new CROSData::MissionItem(
-        mMissionItem.instance_count,
-        mMissionItem.sequence_total,
-        mMissionItem.sequence_current,
-        mMissionItem.latitude,
-        mMissionItem.longitude,
-        mMissionItem.altitude,
-        mMissionItem.yaw
-    );
+    // CROSData::MissionItem *item = new CROSData::MissionItem(
+    //     mMissionItem.instance_count,
+    //     mMissionItem.sequence_total,
+    //     //mMissionItem.sequence_current,
+    //     mMissionItem.latitude,
+    //     mMissionItem.longitude,
+    //     mMissionItem.altitude,
+    //     mMissionItem.yaw
+    // );
     
-    if (mMissionSize < item->seq_total && !std::isnan(mMissionItem.altitude)){
-        mMissions.append(item);
-    } else {
-        delete item;
-    }
-    mMissionSize ++;
+    // if (mMissionSize < item->seq_total && !std::isnan(mMissionItem.altitude)){
+    //     mMissions.append(item);
+    // } else {
+    //     delete item;
+    // }
+    // mMissionSize ++;
 }
 
 void CROSData::updateBatteryStatus(const px4_msgs::msg::BatteryStatus::SharedPtr msg)
 {
     mBatteryStatus = *msg;
+}
+
+void CROSData::updateMonitoring(const px4_msgs::msg::Monitoring::SharedPtr msg)
+{
+    mMonitoring = *msg;
 }
 
 void CROSData::updateFpvCamera(const sensor_msgs::msg::Image::SharedPtr msg)

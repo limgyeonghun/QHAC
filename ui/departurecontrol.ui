@@ -29,27 +29,27 @@
      </column>
      <column>
       <property name="text">
-       <string>Vehicles Type</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Battery</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
        <string>NED</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Deaprture Time</string>
+       <string>RTK</string>
       </property>
      </column>
      <column>
       <property name="text">
-       <string>Arrival Time</string>
+       <string>FIXED</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>MODE</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Battery</string>
       </property>
      </column>
      <column>

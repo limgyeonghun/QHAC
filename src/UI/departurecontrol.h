@@ -21,6 +21,7 @@ public:
     void initData(QString data);
     void updateData(QString data);
     void showWarning(const QMap<int, QString> warning);
+    void adjustColumnSizes();
 
 private:
     Ui::DepartureControl *ui;
