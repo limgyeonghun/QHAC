@@ -61,7 +61,7 @@ void CROSData::initSubscription()
     // Subscribers
     QString topic = nullptr;
     int sysid = mAgent->data("SYSID").toInt();
-    topic = QString("/vehicle%1/out/VehicleStatus").arg(sysid); 
+    topic = QString("/vehicle%1/fmu/out/vehicle_status").arg(sysid); 
     mVehicleStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleStatus, this, _1));
     // topic = QString("/vehicle%1/out/VehicleLocalPosition").arg(sysid); 
     // mVehicleLocalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleLocalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleLocalPosition, this, _1));
@@ -69,7 +69,7 @@ void CROSData::initSubscription()
     // mVehicleGlobalPositionSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::VehicleGlobalPosition>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateVehicleGlobalPosition, this, _1));
     //topic = QString("/vehicle%1/out/BatteryStatus").arg(sysid); 
     //mBatteryStatusSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::BatteryStatus>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateBatteryStatus, this, _1));
-    topic = QString("/vehicle%1/out/Monitoring").arg(sysid); 
+    topic = QString("/vehicle%1/fmu/out/monitoring").arg(sysid); 
     mMonitoringSub_ = mQHAC3Node->create_subscription<px4_msgs::msg::Monitoring>(topic.toStdString().c_str(), qos, std::bind(&CROSData::updateMonitoring, this, _1));
     /*
     topic = QString("/vehicle%1/out/Mission").arg(sysid); 
@@ -90,7 +90,7 @@ void CROSData::initSubscription()
     // Publishers
     rclcpp::QoS qos_cmd = rclcpp::SystemDefaultsQoS();
     qos_cmd.reliable();
-    topic = QString("/vehicle%1/in/VehicleCommand").arg(sysid); 
+    topic = QString("/vehicle%1/fmu/in/vehicle_command").arg(sysid); 
     mCommandQHACPub_ = mQHAC3Node->create_publisher<px4_msgs::msg::VehicleCommand>(topic.toStdString().c_str(), qos_cmd);
     // mUavcanParameterRequestQHACPub_ = mQHAC3Node->create_publisher<px4_msgs::msg::UavcanParameterRequest>(topic_prefix + "/uavcan_parameter_request", rclcpp::SystemDefaultsQoS());
 
